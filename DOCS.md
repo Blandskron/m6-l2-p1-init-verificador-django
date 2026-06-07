@@ -1,394 +1,143 @@
-# Aplicación 1: Inicializador y verificador de proyectos Django
+# Documentación Detallada: Inicializador y Verificador de Proyectos Django
 
-Proyecto: **init_verificador_django**  
-App: **verificador**
-
-Este documento explica cada parte del proyecto y qué función cumple, usando exactamente lo que fue implementado.
+Este documento explica cada parte del proyecto, su arquitectura y los componentes implementados en la aplicación **`init_verificador_django`** para la app **`verificador`**.
 
 ---
 
-## 1) Estructura del proyecto
+## 1. Estructura de Carpetas Generada
 
-Al crear el proyecto con:
-
-- `django-admin startproject init_verificador_django`
-
-se genera una **doble carpeta** con el mismo nombre, quedando así:
+El proyecto se estructura bajo el esquema estándar de doble carpeta de Django (generado al no usar el parámetro `.` en `django-admin startproject`):
 
 ```
-
 init_verificador_django/
-├─ venv/
-└─ init_verificador_django/
-├─ manage.py
-├─ init_verificador_django/
-│  ├─ **init**.py
-│  ├─ settings.py
-│  ├─ urls.py
-│  ├─ asgi.py
-│  └─ wsgi.py
-├─ verificador/
-│  ├─ views.py
-│  ├─ urls.py
-│  └─ ...
-└─ templates/
-└─ verificador/
-└─ home.html
-
-````
-
-- La carpeta externa es contenedora (incluye `venv` y el proyecto).
-- La carpeta interna contiene el proyecto Django y `manage.py`.
-- La carpeta `init_verificador_django/` interna (segunda) es el “paquete” del proyecto (configuración).
-- La app `verificador/` es un módulo funcional independiente.
+├─ venv/                            # Entorno virtual aislado
+├─ requirements.txt                 # Dependencias administradas por pip
+├─ README.md                        # Guía académica del syllabus
+├─ DOCS.md                          # Documentación técnica del proyecto
+└─ init_verificador_django/         # Carpeta raíz del proyecto Django
+   ├─ manage.py                     # Script administrativo de entrada
+   ├─ init_verificador_django/      # Paquete de configuración principal
+   │  ├─ __init__.py                # Inicializador de paquete
+   │  ├─ settings.py                # Configuración global
+   │  ├─ urls.py                    # Enrutamiento principal
+   │  ├─ asgi.py                    # Configuración asíncrona
+   │  └─ wsgi.py                    # Configuración de despliegue síncrono
+   ├─ verificador/                  # Aplicación de control (Módulo)
+   │  ├─ __init__.py
+   │  ├─ admin.py                   # Registro en admin site
+   │  ├─ apps.py                    # Metadatos de la app
+   │  ├─ tests.py                   # Pruebas automatizadas (unitarias)
+   │  ├─ urls.py                    # Enrutamiento de la app
+   │  └─ views.py                   # Lógica de las vistas
+   └─ templates/                    # Directorio de plantillas
+      └─ verificador/
+         └─ home.html               # Plantilla del panel interactivo
+```
 
 ---
 
-## 2) Entorno virtual (`venv`)
+## 2. Entorno Virtual y PIP (`venv`)
+* **Creación**: `python -m venv venv`
+* **Activación (Windows)**: `venv\Scripts\activate`
+* **Mapeo en Backend**: En `views.py` comprobamos si el entorno virtual está activo mediante la instrucción:
+  ```python
+  is_venv = sys.prefix != sys.base_prefix
+  ```
+  Esto devuelve un valor booleano indicando al dashboard si el proyecto corre de forma aislada (`True`) o de forma global en el sistema (`False`).
 
-Se crea con:
+---
 
+## 3. Herramientas Administrativas
+
+### django-admin
+Herramienta administrativa del framework a nivel global. Usada únicamente para crear el esqueleto inicial:
 ```bash
-python -m venv venv
-````
-
-Se activa con:
-
-```bash
-venv\Scripts\activate
+django-admin startproject init_verificador_django
 ```
 
-Qué significa `venv` aquí:
-
-* El proyecto instala Django **dentro del entorno virtual**, no globalmente.
-* `pip install django` instala paquetes en `venv/Lib/site-packages`.
-* El comando `python` apunta al intérprete dentro de `venv`.
-
-Por qué importa en este proyecto:
-
-* El objetivo es que la instalación y ejecución dependan solo del proyecto actual.
-* Evita dependencias globales y conflictos entre proyectos.
+### manage.py
+Punto de entrada administrativo del proyecto. Vincula automáticamente el módulo de configuración `settings.py`. Sus comandos configurados e interactivos son:
+* **`runserver`**: Levanta el servidor local de desarrollo.
+* **`startapp`**: Genera el módulo `verificador/`.
+* **`createsuperuser`**: Permite dar de alta al administrador del sitio.
+* **`migrate`**: Genera el archivo SQLite `db.sqlite3` y aplica las tablas por defecto (sesiones, administración, autenticación).
 
 ---
 
-## 3) Instalación y verificación de Django
-
-Instalación (dentro del venv):
-
-```bash
-pip install django
-```
-
-Verificación con herramientas administrativas:
-
-```bash
-django-admin --version
-python -m django --version
-```
-
-Qué verifican:
-
-* `django-admin --version`: comprueba que el ejecutable de Django está disponible.
-* `python -m django --version`: comprueba que el módulo Django se puede importar con ese `python`.
-
----
-
-## 4) `django-admin` vs `manage.py`
-
-### `django-admin`
-
-Es el utilitario global de Django para tareas generales, por ejemplo:
-
-* crear un proyecto (`startproject`)
-
-Se usa antes de tener `manage.py`.
-
----
-
-### `manage.py`
-
-Es el utilitario administrativo del **proyecto creado**.
-
-* Está ligado a `settings.py` del proyecto
-* Sabe cuál configuración usar
-* Ejecuta comandos sobre ese proyecto exacto
-
-Ejemplos usados en el proyecto:
-
-* `python manage.py help`
-* `python manage.py runserver`
-* `python manage.py startapp verificador`
-* `python manage.py migrate`
-* `python manage.py createsuperuser`
-
-Diferencia clave práctica:
-
-* `django-admin` se usa para iniciar y administrar a nivel general.
-* `manage.py` se usa para administrar el proyecto ya creado y su entorno configurado.
-
----
-
-## 5) `manage.py` (qué representa)
-
-`manage.py` es el “punto de entrada” para comandos del proyecto.
-
-Características:
-
-* Ejecuta comandos con acceso directo a la configuración del proyecto
-* Conecta automáticamente con `settings.py` sin que el usuario importe nada manualmente
-
-En este proyecto se usa para:
-
-* levantar el servidor
-* crear apps
-* aplicar migraciones
-* administrar usuario admin
-
----
-
-## 6) Archivos de configuración del proyecto
-
-Estos archivos viven en:
-
-```
-init_verificador_django/init_verificador_django/
-```
-
-### `__init__.py`
-
-Marca esa carpeta como paquete Python.
-Permite que Django importe módulos como:
-
-* `init_verificador_django.settings`
-
----
-
-### `settings.py`
-
-Configuración global del proyecto.
-
-En este proyecto, la modificación realizada fue:
-
-* registrar la app `verificador` en `INSTALLED_APPS`
-
-Esto habilita que Django:
-
-* cargue componentes de la app
-* encuentre templates (si se configura)
-* reconozca migraciones (si existieran)
-
----
-
-### `urls.py` (del proyecto)
-
-Controla el enrutamiento principal del proyecto.
-
-En este proyecto:
-
-* se delega el enrutamiento a la app `verificador` con `include("verificador.urls")`
-
-Esto crea una arquitectura de enrutamiento en capas:
-
-* proyecto (router principal)
-* app (router del módulo)
-
----
-
-### `wsgi.py` / `asgi.py`
-
-Son puntos de entrada para servidores en despliegue.
-
-* `wsgi.py`: servidores WSGI tradicionales
-* `asgi.py`: servidores ASGI (async)
-
-En este proyecto existen para completar el esqueleto estándar generado por Django.
-
----
-
-## 7) La app `verificador`
-
-Se crea con:
-
-```bash
-python manage.py startapp verificador
-```
-
-Responsabilidad:
-
-* contener vistas y rutas mínimas para validar que el proyecto funciona.
-
-Archivos usados:
-
-* `verificador/views.py`
-* `verificador/urls.py`
-
----
-
-## 8) Enrutamiento (routing) en la app
-
-### `verificador/urls.py`
-
-Define rutas internas de la app:
-
-* `/hola/` → `views.hola`
-* `/` → `views.home`
-
-Aquí se usa `app_name` para namespacing:
-
+## 4. Archivos de Configuración Principal
+
+### `init_verificador_django/settings.py`
+Se configuraron los siguientes parámetros indispensables:
+1. **`BASE_DIR`**: Generado dinámicamente mediante `pathlib.Path(__file__).resolve().parent.parent`.
+2. **`INSTALLED_APPS`**: Registra la aplicación local `'verificador'` para que Django busque sus plantillas, rutas y configuraciones.
+3. **`TEMPLATES`**: Se modificó el parámetro `'DIRS'` para incluir `BASE_DIR / 'templates'`, permitiendo que el motor de plantillas de Django localice la carpeta general en el directorio raíz.
+4. **`DATABASES`**: Conexión por defecto a base de datos embebida SQLite3 en la raíz del proyecto.
+
+### `init_verificador_django/urls.py`
+Enrutador raíz del proyecto. Delega el tráfico de la ruta raíz `""` a la aplicación mediante:
 ```python
-app_name = "verificador"
+path('', include('verificador.urls')),
 ```
-
-Esto permite referenciar rutas por nombre (si se usan templates con `{% url %}`).
 
 ---
 
-## 9) Vistas (`verificador/views.py`)
+## 5. Aplicación `verificador`
 
-Las vistas reciben un `HttpRequest` y retornan un `HttpResponse`.
+### Espacios de Nombres (Namespacing)
+En `verificador/urls.py` se declara `app_name = "verificador"`. Esto aisla las rutas de la app, permitiendo usar `reverse('verificador:home')` en Python y `{% url 'verificador:home' %}` en plantillas HTML, evitando conflictos en proyectos complejos.
 
-En este proyecto hay 2 vistas:
+### Lógica de Vistas (`verificador/views.py`)
+Implementa dos endpoints:
+1. **`hola` (Respuesta Directa)**: Retorna un objeto `HttpResponse` sin requerir plantillas, ideal para pruebas de respuesta rápida en el navegador.
+2. **`home` (Panel Interactivo)**:
+   * Recopila información del sistema utilizando módulos estándar (`sys`, `os`, `django`).
+   * Evalúa la conexión a base de datos con `django.db.connection` e inspecciona si las migraciones base están aplicadas.
+   * Ejecuta un escáner recursivo del directorio del proyecto (excluyendo cachés, git y el venv) y serializa el árbol de archivos a JSON (`folder_tree_json`).
+   * Envía toda la metadata a `home.html` para su renderización dinámica.
 
----
-
-### `hola`
-
-```python
-return HttpResponse("Hola mundo (sin HTML/template). Proyecto OK ✅")
-```
-
-Propósito:
-
-* validar el proyecto con una respuesta directa
-* sin templates
-* sin HTML externo
-* sin dependencias adicionales
-
-Ruta:
-
-* `http://127.0.0.1:8000/hola/`
+### Plantilla HTML (`templates/verificador/home.html`)
+Diseñada como una interfaz web interactiva con:
+* **Estilos CSS Custom**: Diseño premium oscuro ("dark-mode"), tarjetas de cristal translúcido (glassmorphism), y tipografías modernas.
+* **Sistema de Pestañas**: Lógica JavaScript pura para alternar entre el Panel de Control, información de PIP/entornos, comandos administrativos, y fundamentos de arquitectura MTV.
+* **Explorador de Archivos**: Componente interactivo que analiza el JSON enviado por el servidor y construye un árbol de directorios desplegable.
 
 ---
 
-### `home`
-
-```python
-return render(request, "verificador/home.html", contexto)
-```
-
-Propósito:
-
-* validar el flujo: URL → View → Template
-* renderizar un template y pasar contexto
-
-Ruta:
-
-* `http://127.0.0.1:8000/`
+## 6. Pruebas Unitarias (`verificador/tests.py`)
+Contiene pruebas automatizadas para garantizar la estabilidad del proyecto:
+1. `test_hola_view_status_code`: Verifica que `/hola/` responda 200 y contenga el saludo de prueba.
+2. `test_home_view_status_code_and_template`: Verifica que `/` responda 200, renderice `home.html` y contenga el título del panel.
+3. `test_url_namespace_resolving`: Verifica que las reversiones de rutas utilizando el namespace `verificador` apunten a los paths correctos.
 
 ---
 
-## 10) Templates
+## 7. Arquitectura de Despliegue con Docker
 
-Carpeta creada manualmente:
+El proyecto incluye soporte para contenedores Docker con el fin de simplificar la configuración inicial, garantizar que la ejecución se realice exactamente sobre el mismo sistema operativo y librerías, y automatizar tareas repetitivas de desarrollo:
 
-```
-templates/verificador/home.html
-```
+### A. Dockerfile (Estrategia de Imagen)
+- **Base**: Utiliza la imagen oficial de Python `python:3.11-slim` por su reducido tamaño y alto rendimiento.
+- **Variables de Entorno**:
+  - `PYTHONDONTWRITEBYTECODE=1`: Evita que Python escriba archivos `.pyc` de caché compilada en el contenedor.
+  - `PYTHONUNBUFFERED=1`: Evita que la salida en consola sea retenida por búferes de memoria, permitiendo ver logs en tiempo real.
+- **Herramientas**: Se instala `dos2unix` para sanitizar posibles finales de línea de estilo Windows (`CRLF`) en los scripts de shell y asegurar compatibilidad de ejecución en contenedores Linux.
 
-`home.html` recibe variables del contexto:
+### B. docker-entrypoint.sh (Ciclo de Vida de Arranque)
+El contenedor no se limita a ejecutar el servidor de desarrollo, sino que coordina y audita secuencialmente:
+1. **Migraciones**: Ejecución de `python manage.py migrate --noinput` para preparar el esquema relacional en SQLite3.
+2. **Pruebas**: Ejecución de `python manage.py test verificador` para bloquear la puesta en marcha si el código presenta fallos.
+3. **Superusuario**: Creación condicional del administrador por variables de entorno sin detener el script si la cuenta ya existe.
+4. **Ejecución**: Lanzamiento del proceso de Django utilizando `exec` para delegar la recepción de señales de sistema (como SIGTERM o SIGKILL) directamente a Python.
 
-* `mensaje`
-* `ruta`
-* `metodo`
-
-Estas variables se imprimen con `{{ ... }}`.
-
-Este template existe solo como verificación de renderización.
-
----
-
-## 11) Migraciones base (por qué existen aquí)
-
-Se ejecutó:
-
-```bash
-python manage.py migrate
-```
-
-Qué hace:
-
-* crea tablas base del framework en SQLite
-* permite usar admin/auth/sessions sin configuración extra
-
-Aunque esta app no crea modelos propios, `migrate` valida que:
-
-* el proyecto está funcional a nivel de base de datos
-* el proyecto quedó correctamente inicializado
+### C. docker-compose.yml (Orquestación de Desarrollo)
+- **Servicios**: Define el contenedor `web` exponiendo el puerto `8000` de forma bidireccional.
+- **Volúmenes**:
+  - Monta el directorio local en `/app` para permitir la sincronización en caliente del código (cualquier cambio en la máquina host se refleja inmediatamente en el contenedor).
+  - Monta un volumen anónimo `/app/venv` para evitar que el entorno virtual del host interfiera o sobreescriba las librerías del contenedor.
+- **Variables de Entorno**: Define `DJANGO_SUPERUSER_USERNAME`, `DJANGO_SUPERUSER_PASSWORD`, y `DJANGO_SUPERUSER_EMAIL` para el aprovisionamiento automatizado del administrador.
 
 ---
 
-## 12) `createsuperuser` y admin
+## 8. Licencia del Proyecto
+El proyecto está licenciado bajo la **Licencia MIT**, lo cual permite el libre uso, copia, modificación y distribución del código con fines educativos o comerciales, siempre que se conserve la declaración de derechos de autor original en el archivo `LICENSE`.
 
-Se ejecuta:
-
-```bash
-python manage.py createsuperuser
-```
-
-Qué habilita:
-
-* acceso al panel administrativo en:
-
-`http://127.0.0.1:8000/admin/`
-
-Esto valida que:
-
-* `INSTALLED_APPS` base funcionan
-* las migraciones base se aplicaron
-* el sitio administrativo está operativo
-
----
-
-## 13) Servidor de desarrollo
-
-Se levanta con:
-
-```bash
-python manage.py runserver
-```
-
-Qué significa:
-
-* servidor de desarrollo integrado
-* ejecuta el proyecto usando los settings del proyecto
-
-Rutas verificadas:
-
-* `/hola/` (HttpResponse directo)
-* `/` (Template render)
-* `/admin/` (administración)
-
----
-
-## 14) Qué verifica este proyecto (alcance exacto)
-
-* Crear y activar entorno virtual
-* Instalar Django con `pip`
-* Verificar instalación (2 métodos)
-* Crear proyecto con `django-admin startproject`
-* Usar `manage.py` para:
-
-  * `help`
-  * `runserver`
-  * `startapp`
-  * `migrate`
-  * `createsuperuser`
-* Configurar routing (`urls.py`)
-* Confirmar que views y templates funcionan
-
-No incluye:
-
-* modelos
-* formularios
-* lógica de negocio
-* persistencia propia

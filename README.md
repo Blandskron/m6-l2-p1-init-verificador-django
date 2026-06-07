@@ -1,230 +1,177 @@
-# Aplicación 1: Inicializador y verificador de proyectos Django
+# Inicializador y Verificador de Proyectos Django (Módulo 6 - L2-D1)
 
-**Proyecto:** `init_verificador_django`  
-**App:** `verificador`
+Este proyecto educativo está diseñado para demostrar y verificar a la perfección el cumplimiento del tema:
+**"2. Utilizar las herramientas administrativas provistas por el framework para la configuración de un nuevo proyecto web Django"**.
+
+Sirve como una guía de referencia académica y como un dashboard interactivo que valida en tiempo real la correcta inicialización del entorno, dependencias, enrutamiento y arquitectura base.
 
 ---
 
-## 1) Crear carpeta del proyecto y entrar
+## 📖 Fundamentos Conceptuales del Syllabus
 
+### 1. Gestión de Entornos y PIP (Syllabus 2.1)
+* **Entorno Virtual (`venv`)**: Es una herramienta que aísla las dependencias del proyecto. Al crear e instalar paquetes dentro de él, se evita contaminar la instalación global de Python y se previenen conflictos de versiones entre diferentes aplicaciones web.
+* **El utilitario `pip`**: Gestor de paquetes oficial de Python. Se utiliza para descargar, instalar, actualizar y desinstalar paquetes y librerías externas (como Django).
+* **Verificación de la instalación**:
+  * `django-admin --version`: Confirma la presencia del utilitario de comandos de Django.
+  * `python -m django --version`: Confirma que el intérprete de Python del entorno puede importar la librería.
+
+### 2. Creación de Proyectos y Herramientas Administrativas (Syllabus 2.2)
+* **`django-admin`**: Utilitario administrativo global de Django. Su función principal es realizar tareas que ocurren *antes* de que el proyecto exista, siendo la principal `django-admin startproject <nombre>`.
+* **`manage.py`**: Archivo autogenerado al crear el proyecto. Reemplaza a `django-admin` para la administración local del proyecto y vincula automáticamente el archivo de configuración `settings.py` sin necesidad de configurarlo manualmente en la terminal.
+
+#### Comandos Clave de `manage.py`:
+* **`runserver`**: Inicia el servidor HTTP de desarrollo integrado para verificar la aplicación localmente.
+* **`startapp`** *(referenciado como `startup` en algunos syllabus)*: Crea un nuevo módulo funcional (aplicación) con su correspondiente estructura de MVC/MTV.
+* **`createsuperuser`**: Genera un usuario administrador para gestionar los modelos de datos en la interfaz administrativa autogenerada de Django (`/admin/`).
+* **`migrate`**: Aplica los esquemas de base de datos pendientes (migraciones) en el motor de base de datos configurado.
+
+### 3. Estructura de Directorios Estándar
+Al ejecutar `django-admin startproject init_verificador_django`, se genera una doble carpeta:
+1. **Carpeta raíz (externa)**: Contenedor del proyecto, entorno virtual (`venv/`) y requerimientos.
+2. **Carpeta del proyecto (interna)**: Contiene `manage.py` y el paquete de configuración:
+   * **`__init__.py`**: Archivo vacío que marca el directorio como un paquete Python importable.
+   * **`settings.py`**: Parámetros globales del proyecto (Base de Datos, Apps Instaladas, Plantillas, Idioma).
+   * **`urls.py`**: Tabla de enrutamiento principal (URLConf) del sitio web.
+   * **`wsgi.py` / `asgi.py`**: Puntos de enlace con servidores de despliegue en producción.
+
+### 4. Configuración y Espacios de Nombre (Namespaces)
+* **Configuración de Paths (`settings.py`)**: Se utiliza `pathlib.Path` para definir de forma dinámica el directorio raíz `BASE_DIR`, lo que permite configurar rutas relativas portables para bases de datos y archivos estáticos.
+* **Configuración de Templates**: Definición de la carpeta `templates` dentro del parámetro `DIRS` para centralizar las plantillas HTML a nivel de proyecto.
+* **Manejo de Espacios de Nombres (Namespaces)**: El uso de `app_name = "verificador"` en los archivos `urls.py` de la aplicación permite organizar las rutas por ámbitos aislados. Esto evita colisiones de nombres al redireccionar o generar enlaces en proyectos con múltiples aplicaciones.
+
+### 5. Arquitectura MTV (Model-Template-View)
+Django implementa una variante del patrón de diseño clásico MVC (Modelo-Vista-Controlador):
+* **Modelo (Model)**: La representación de los datos y las reglas de negocio (Base de Datos).
+* **Plantilla (Template)**: La capa de presentación (HTML dinámico) que ve el usuario.
+* **Vista (View)**: La lógica que une el modelo con la plantilla. Equivale al *Controlador* clásico, recibiendo una petición HTTP y entregando una respuesta HTTP.
+
+---
+
+## 🛠️ Guía Paso a Paso: Recreación e Instalación
+
+### 1. Inicializar el Entorno
+Crea la carpeta raíz del proyecto, activa tu entorno e instala Django utilizando `pip`:
 ```bash
+# Crear directorio y entrar
 mkdir init_verificador_django
 cd init_verificador_django
-````
 
----
-
-## 2) Crear y activar entorno virtual (venv)
-
-```bash
+# Crear entorno virtual
 python -m venv venv
+
+# Activar en Windows
 venv\Scripts\activate
+
+# Activar en Linux/macOS
+source venv/bin/activate
+
+# Instalar dependencias
+pip install -r requirements.txt
 ```
 
----
-
-## 3) Actualizar pip e instalar Django (con pip)
-
+### 2. Generar el Proyecto y la Aplicación
 ```bash
-python -m pip install --upgrade pip
-pip install django
-```
-
----
-
-## 4) Verificar instalación de Django
-
-```bash
-django-admin --version
-python -m django --version
-```
-
----
-
-## 5) Crear proyecto Django (sin punto, con doble carpeta)
-
-```bash
+# Crear proyecto (estructura base)
 django-admin startproject init_verificador_django
-```
 
----
-
-## 6) Entrar a la carpeta del proyecto (donde está manage.py)
-
-```bash
+# Entrar a la carpeta del proyecto (donde está manage.py)
 cd init_verificador_django
-```
 
----
-
-## 7) Revisar comandos disponibles de manage.py
-
-```bash
-python manage.py help
-```
-
----
-
-## 8) Levantar el servidor con manage.py
-
-```bash
-python manage.py runserver
-```
-
-Detener servidor:
-
-```bash
-# CTRL + C
-```
-
----
-
-## 9) Crear la aplicación
-
-```bash
+# Crear aplicación independiente
 python manage.py startapp verificador
 ```
 
----
-
-## 10) Ejecutar migraciones base
-
-```bash
-python manage.py migrate
-```
-
----
-
-## 11) Modificar `init_verificador_django/settings.py` (solo lo que agregas)
-
-Agregar la app instalada:
-
+### 3. Configurar Settings y URLs
+Registra la aplicación y define la ruta de las plantillas en `init_verificador_django/settings.py`:
 ```python
-INSTALLED_APPS += [
-    "verificador",
+# Registrar app
+INSTALLED_APPS = [
+    ...
+    'verificador',
+]
+
+# Configurar ruta de plantillas
+TEMPLATES = [
+    {
+        ...
+        'DIRS': [BASE_DIR / 'templates'],
+        'APP_DIRS': True,
+        ...
+    },
 ]
 ```
 
----
-
-## 12) Modificar `init_verificador_django/urls.py` (solo lo que agregas)
-
-Agregar include de la app:
-
+Enlaza las rutas de la aplicación en `init_verificador_django/urls.py`:
 ```python
+from django.contrib import admin
 from django.urls import include, path
 
-urlpatterns += [
-    path("", include("verificador.urls")),
-]
-```
-
----
-
-## 13) Crear `verificador/urls.py`
-
-```python
-from django.urls import path
-
-from . import views
-
-app_name = "verificador"
-
 urlpatterns = [
-    path("hola/", views.hola, name="hola"),
-    path("", views.home, name="home"),
+    path('admin/', admin.site.urls),
+    path('', include('verificador.urls')),
 ]
 ```
 
----
-
-## 14) Modificar `verificador/views.py` (archivo completo)
-
-```python
-from django.http import HttpRequest, HttpResponse
-from django.shortcuts import render
-
-
-def hola(request: HttpRequest) -> HttpResponse:
-    """
-    Saludo mínimo sin templates: respuesta directa.
-    """
-    return HttpResponse("Hola mundo (sin HTML/template). Proyecto OK ✅")
-
-
-def home(request: HttpRequest) -> HttpResponse:
-    """
-    Vista mínima para verificar que el proyecto fue creado
-    y levantado correctamente usando herramientas administrativas.
-    """
-    return render(
-        request,
-        "verificador/home.html",
-        {
-            "mensaje": "Proyecto Django creado y verificado correctamente",
-            "ruta": request.path,
-            "metodo": request.method,
-        },
-    )
-```
-
----
-
-## 15) Crear carpetas de templates
-
+### 4. Ejecutar e Iniciar Servidor
 ```bash
-mkdir templates
-mkdir templates\verificador
-```
+# Ejecutar migraciones iniciales para crear tablas SQLite
+python manage.py migrate
 
----
+# Crear superusuario administrador
+python manage.py createsuperuser
 
-## 16) Crear `templates/verificador/home.html`
-
-```html
-<!doctype html>
-<html lang="es">
-  <head>
-    <meta charset="utf-8" />
-    <title>Verificador Django</title>
-  </head>
-  <body>
-    <h1>{{ mensaje }}</h1>
-
-    <p><strong>Ruta:</strong> {{ ruta }}</p>
-    <p><strong>Método HTTP:</strong> {{ metodo }}</p>
-
-    <p>Servidor levantado usando <code>python manage.py runserver</code>.</p>
-  </body>
-</html>
-```
-
----
-
-## 17) Levantar el servidor y probar
-
-```bash
+# Iniciar servidor de desarrollo
 python manage.py runserver
 ```
 
-Rutas:
-
-* `http://127.0.0.1:8000/hola/` → saludo directo (sin template)
-* `http://127.0.0.1:8000/` → home con template
-* `http://127.0.0.1:8000/admin/` → admin (si creas superusuario)
-
 ---
 
-## 18) Crear superusuario (admin)
+## 🧪 Pruebas y Verificación del Proyecto
 
+El proyecto incluye pruebas automatizadas para comprobar el enrutamiento y las respuestas. Puedes ejecutarlas localmente con:
 ```bash
-python manage.py createsuperuser
+python manage.py test verificador
 ```
 
 ---
 
-## 19) Salir del entorno virtual
+## 🐳 Despliegue Automatizado con Docker
 
-```bash
-deactivate
-```
+Para facilitar el despliegue y la replicabilidad exacta del entorno sin necesidad de instalar Python o dependencias de forma manual, el proyecto cuenta con soporte completo para **Docker** y **Docker Compose**.
+
+### Prerrequisitos
+- Tener instalado [Docker Desktop](https://www.docker.com/products/docker-desktop/) (que incluye Docker Compose).
+
+### Instrucciones de Despliegue:
+
+1. **Construir e Iniciar los contenedores**:
+   Ejecuta el siguiente comando en la raíz del proyecto (donde se ubica `docker-compose.yml`):
+   ```bash
+   docker compose up --build
+   ```
+   *Este comando compilará la imagen de Docker, creará el contenedor, ejecutará las migraciones de la base de datos, correrá el set de pruebas unitarias de forma automatizada y levantará el servidor web.*
+
+2. **Acceder a la aplicación**:
+   Abre tu navegador y entra en:
+   - Sitio Web y Panel de Control: [http://localhost:8000/](http://localhost:8000/)
+   - Saludo rápido (HttpResponse): [http://localhost:8000/hola/](http://localhost:8000/hola/)
+   - Sitio Administrativo: [http://localhost:8000/admin/](http://localhost:8000/admin/)
+
+3. **Credenciales del Administrador Autogeneradas**:
+   El entrypoint del contenedor auto-proveerá un superusuario administrador si inicias mediante Docker Compose con las siguientes credenciales por defecto (modificables en `docker-compose.yml`):
+   - **Usuario**: `admin`
+   - **Contraseña**: `adminpassword123`
+   - **Email**: `admin@verificador.cl`
+
+4. **Detener el contenedor**:
+   ```bash
+   docker compose down
+   ```
+
+---
+
+## ⚖️ Licencia
+
+Este proyecto se distribuye bajo la licencia **MIT**. Para más detalles, consulta el archivo [LICENSE](file:///c:/Users/BlandskronNotebook/Documents/updatesGitHubs/Django/M6/M6-L2-D1-InitVerificadorDjango/LICENSE) en el directorio raíz.
+

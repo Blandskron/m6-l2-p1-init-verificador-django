@@ -2,14 +2,1136 @@
 <html lang="es">
   <head>
     <meta charset="utf-8" />
-    <title>Verificador Django</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Panel de Verificación Django - Proyecto Educativo</title>
+    <!-- Fuente Outfit de Google Fonts para estética premium -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+    
+    <style>
+      :root {
+        --bg-primary: #0f172a;
+        --bg-secondary: #1e293b;
+        --bg-tertiary: #334155;
+        --accent-indigo: #6366f1;
+        --accent-purple: #a855f7;
+        --accent-emerald: #10b981;
+        --accent-amber: #f59e0b;
+        --accent-rose: #f43f5e;
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+        --border-color: rgba(255, 255, 255, 0.08);
+        --glass-bg: rgba(30, 41, 59, 0.7);
+        --glass-border: rgba(255, 255, 255, 0.05);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: 'Outfit', sans-serif;
+        background-color: var(--bg-primary);
+        color: var(--text-main);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        line-height: 1.6;
+        background-image: 
+          radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+          radial-gradient(circle at 90% 80%, rgba(168, 85, 247, 0.15) 0%, transparent 40%);
+        background-attachment: fixed;
+      }
+
+      header {
+        border-bottom: 1px solid var(--border-color);
+        background: rgba(15, 23, 42, 0.8);
+        backdrop-filter: blur(12px);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        padding: 1.25rem 2rem;
+      }
+
+      .header-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .header-title-section {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .header-title-section h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #fff 30%, var(--text-muted) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .header-title-section h1 span.badge {
+        font-size: 0.75rem;
+        background: linear-gradient(135deg, var(--accent-indigo), var(--accent-purple));
+        -webkit-text-fill-color: white;
+        padding: 0.2rem 0.6rem;
+        border-radius: 9999px;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+      }
+
+      .header-title-section p {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+        margin-top: 0.25rem;
+      }
+
+      .header-meta {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+      }
+
+      .meta-tag {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        padding: 0.4rem 0.8rem;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .meta-tag strong {
+        color: var(--accent-indigo);
+      }
+
+      .meta-tag.status-active {
+        border-color: rgba(16, 185, 129, 0.3);
+        background: rgba(16, 185, 129, 0.05);
+      }
+
+      .meta-tag.status-active .indicator {
+        width: 8px;
+        height: 8px;
+        background-color: var(--accent-emerald);
+        border-radius: 50%;
+        box-shadow: 0 0 8px var(--accent-emerald);
+      }
+
+      main {
+        max-width: 1400px;
+        width: 100%;
+        margin: 2rem auto;
+        padding: 0 2rem;
+        flex: 1;
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 2rem;
+      }
+
+      @media (max-width: 1024px) {
+        main {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Sidebar Navigation */
+      .sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .nav-button {
+        background: transparent;
+        border: 1px solid transparent;
+        color: var(--text-muted);
+        padding: 1rem 1.25rem;
+        border-radius: 12px;
+        text-align: left;
+        font-family: inherit;
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .nav-button:hover {
+        background: rgba(255, 255, 255, 0.03);
+        color: var(--text-main);
+        padding-left: 1.5rem;
+      }
+
+      .nav-button.active {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(168, 85, 247, 0.15));
+        border-color: rgba(99, 102, 241, 0.2);
+        color: var(--text-main);
+        font-weight: 600;
+        box-shadow: inset 0 0 12px rgba(99, 102, 241, 0.05);
+        padding-left: 1.5rem;
+      }
+
+      /* Content Area */
+      .content-pane {
+        display: none;
+        animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .content-pane.active {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Cards and Containers */
+      .card {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 16px;
+        padding: 2rem;
+        backdrop-filter: blur(8px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      }
+
+      .card-header {
+        margin-bottom: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 1rem;
+      }
+
+      .card-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .card-description {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin-top: 0.25rem;
+      }
+
+      /* Metric Grid */
+      .metric-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .metric-card {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .metric-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(99, 102, 241, 0.3);
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      .metric-label {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-muted);
+        font-weight: 500;
+      }
+
+      .metric-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-main);
+      }
+
+      .metric-sub {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+      }
+
+      .status-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+
+      .status-success {
+        background-color: var(--accent-emerald);
+        box-shadow: 0 0 10px var(--accent-emerald);
+      }
+
+      .status-warning {
+        background-color: var(--accent-amber);
+        box-shadow: 0 0 10px var(--accent-amber);
+      }
+
+      /* Tab 1 Structure layout */
+      .dashboard-layout {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 2rem;
+      }
+
+      @media (max-width: 1024px) {
+        .dashboard-layout {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Folders Tree Explorer */
+      .tree-container {
+        font-family: 'Fira Code', monospace;
+        font-size: 0.9rem;
+        background: rgba(0, 0, 0, 0.2);
+        padding: 1.25rem;
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+        max-height: 450px;
+        overflow-y: auto;
+      }
+
+      .tree-node {
+        margin-left: 1.5rem;
+        position: relative;
+        margin-top: 0.3rem;
+      }
+
+      .tree-node::before {
+        content: '';
+        position: absolute;
+        top: -6px;
+        left: -12px;
+        border-left: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--border-color);
+        width: 10px;
+        height: 15px;
+      }
+
+      .tree-node.root-node {
+        margin-left: 0;
+      }
+
+      .tree-node.root-node::before {
+        display: none;
+      }
+
+      .tree-node-content {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        padding: 0.15rem 0.4rem;
+        border-radius: 4px;
+        transition: background-color 0.2s;
+      }
+
+      .tree-node-content:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+      }
+
+      .tree-node-icon {
+        color: var(--accent-indigo);
+        flex-shrink: 0;
+      }
+
+      .tree-node-icon.file {
+        color: var(--text-muted);
+      }
+
+      .tree-node-name {
+        color: var(--text-main);
+      }
+
+      .tree-node-name.folder-name {
+        font-weight: 500;
+        color: #e2e8f0;
+      }
+
+      /* Syllabus checklist */
+      .checklist {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .checklist-item {
+        display: flex;
+        gap: 1rem;
+        align-items: flex-start;
+        padding: 1rem;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.01);
+        border: 1px solid var(--border-color);
+        transition: background 0.3s;
+      }
+
+      .checklist-item:hover {
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .checklist-icon {
+        color: var(--accent-emerald);
+        font-size: 1.2rem;
+        flex-shrink: 0;
+      }
+
+      .checklist-content h4 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 0.2rem;
+      }
+
+      .checklist-content p {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+      }
+
+      /* Code container */
+      .code-container {
+        position: relative;
+        background: #0b0f19 !important;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        margin: 1rem 0;
+        overflow: hidden;
+      }
+
+      .code-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.02);
+        padding: 0.5rem 1rem;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        font-family: 'Fira Code', monospace;
+      }
+
+      pre {
+        padding: 1.25rem;
+        overflow-x: auto;
+        font-family: 'Fira Code', monospace;
+        font-size: 0.875rem;
+        color: #e2e8f0;
+      }
+
+      .comment { color: #64748b; font-style: italic; }
+      .keyword { color: #f43f5e; font-weight: 500; }
+      .string { color: #10b981; }
+      .function { color: #6366f1; }
+      .number { color: #f59e0b; }
+
+      /* Comparison Table */
+      .table-wrapper {
+        overflow-x: auto;
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+        margin: 1.5rem 0;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+        font-size: 0.9rem;
+      }
+
+      th, td {
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      th {
+        background-color: rgba(255, 255, 255, 0.02);
+        font-weight: 600;
+        color: var(--text-main);
+      }
+
+      tr:last-child td {
+        border-bottom: none;
+      }
+
+      tbody tr:hover {
+        background-color: rgba(255, 255, 255, 0.01);
+      }
+
+      /* MTV Diagram */
+      .mtv-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+        position: relative;
+        margin: 2rem 0;
+      }
+
+      @media (max-width: 768px) {
+        .mtv-container {
+          grid-template-columns: 1fr;
+          gap: 3rem;
+        }
+        
+        .mtv-container::after {
+          display: none;
+        }
+      }
+
+      .mtv-box {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 1.5rem;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+        position: relative;
+        z-index: 2;
+        transition: all 0.3s;
+      }
+
+      .mtv-box:hover {
+        border-color: var(--accent-indigo);
+        background: rgba(99, 102, 241, 0.03);
+        transform: translateY(-4px);
+      }
+
+      .mtv-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--accent-indigo), var(--accent-purple));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        font-weight: bold;
+      }
+
+      .mtv-box.model .mtv-icon {
+        background: linear-gradient(135deg, #ec4899, #f43f5e);
+      }
+
+      .mtv-box.view .mtv-icon {
+        background: linear-gradient(135deg, #6366f1, #3b82f6);
+      }
+
+      .mtv-box.template .mtv-icon {
+        background: linear-gradient(135deg, #10b981, #059669);
+      }
+
+      .mtv-box h4 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-top: 0.25rem;
+      }
+
+      .mtv-box p {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+      }
+
+      /* Footer */
+      footer {
+        border-top: 1px solid var(--border-color);
+        padding: 2rem;
+        text-align: center;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-top: auto;
+        background: rgba(15, 23, 42, 0.4);
+      }
+
+      footer a {
+        color: var(--accent-indigo);
+        text-decoration: none;
+        transition: color 0.2s;
+      }
+
+      footer a:hover {
+        color: var(--accent-purple);
+      }
+    </style>
   </head>
   <body>
-    <h1>{{ mensaje }}</h1>
+    <!-- Header principal -->
+    <header>
+      <div class="header-container">
+        <div class="header-title-section">
+          <h1>{{ mensaje }} <span class="badge">DJANGO M6</span></h1>
+          <p>Herramientas administrativas y configuración del proyecto web Django</p>
+        </div>
+        <div class="header-meta">
+          <div class="meta-tag">
+            <strong>Ruta:</strong> <code>{{ ruta }}</code>
+          </div>
+          <div class="meta-tag">
+            <strong>Método:</strong> <code>{{ metodo }}</code>
+          </div>
+          <div class="meta-tag status-active">
+            <div class="indicator"></div>
+            <span>Servidor Activo</span>
+          </div>
+        </div>
+      </div>
+    </header>
 
-    <p><strong>Ruta:</strong> {{ ruta }}</p>
-    <p><strong>Método HTTP:</strong> {{ metodo }}</p>
+    <!-- Cuerpo principal -->
+    <main>
+      <!-- Menú de navegación lateral -->
+      <aside class="sidebar">
+        <button class="nav-button active" onclick="switchTab(event, 'dashboard')">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z"/></svg>
+          Panel de Control
+        </button>
+        <button class="nav-button" onclick="switchTab(event, 'pip-env')">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+          1. Entorno y PIP
+        </button>
+        <button class="nav-button" onclick="switchTab(event, 'admin-tools')">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+          2. django-admin y manage.py
+        </button>
+        <button class="nav-button" onclick="switchTab(event, 'config-architecture')">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+          3. Estructura y MVC / MTV
+        </button>
+      </aside>
 
-    <p>El servidor fue levantado usando <code>manage.py runserver</code>.</p>
+      <!-- Panel de contenido -->
+      <section class="content">
+        
+        <!-- PESTAÑA 1: DASHBOARD -->
+        <div id="dashboard" class="content-pane active">
+          <!-- Grilla de Métricas -->
+          <div class="metric-grid">
+            <div class="metric-card">
+              <span class="metric-label">Framework Django</span>
+              <span class="metric-value">v{{ django_version }}</span>
+              <span class="metric-sub">Importado correctamente</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-label">Entorno Virtual (venv)</span>
+              <span class="metric-value">
+                {% if is_venv %}
+                  <span class="status-dot status-success"></span> Activo
+                {% else %}
+                  <span class="status-dot status-warning"></span> Inactivo (Global)
+                {% endif %}
+              </span>
+              <span class="metric-sub">Aislamiento de dependencias</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-label">Python Intérprete</span>
+              <span class="metric-value">v{{ python_version }}</span>
+              <span class="metric-sub">Versión del entorno</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-label">Base de Datos</span>
+              <span class="metric-value">
+                {% if migrations_applied %}
+                  <span class="status-dot status-success"></span> Migrada
+                {% else %}
+                  <span class="status-dot status-warning"></span> Tablas vacías
+                {% endif %}
+              </span>
+              <span class="metric-sub">SQLite3: {{ tables_count }} tablas creadas</span>
+            </div>
+          </div>
+
+          <div class="dashboard-layout">
+            <!-- Columna Izquierda: Checklist de syllabus -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">Verificador de Requisitos Curriculares</h3>
+                  <p class="card-description">Auditoría automática de los elementos requeridos por la rúbrica educativa</p>
+                </div>
+              </div>
+              <div class="checklist">
+                <div class="checklist-item">
+                  <span class="checklist-icon">✅</span>
+                  <div class="checklist-content">
+                    <h4>2.1 Instalación con PIP en Entorno Virtual</h4>
+                    <p>El proyecto detecta el intérprete dentro de un entorno virtual y provee un archivo <code>requirements.txt</code> para instalar dependencias de forma reproducible.</p>
+                  </div>
+                </div>
+                <div class="checklist-item">
+                  <span class="checklist-icon">✅</span>
+                  <div class="checklist-content">
+                    <h4>2.2 Creación de Proyecto con django-admin</h4>
+                    <p>Estructura de carpetas estándar de Django creada con el comando <code>django-admin startproject init_verificador_django</code>, que incluye el archivo base <code>manage.py</code>.</p>
+                  </div>
+                </div>
+                <div class="checklist-item">
+                  <span class="checklist-icon">✅</span>
+                  <div class="checklist-content">
+                    <h4>Administración de Servidor con manage.py</h4>
+                    <p>El servidor actual se encuentra en línea y sirviendo peticiones usando el comando <code>python manage.py runserver</code> de manera local en el puerto actual.</p>
+                  </div>
+                </div>
+                <div class="checklist-item">
+                  <span class="checklist-icon">✅</span>
+                  <div class="checklist-content">
+                    <h4>Creación de aplicaciones y MTV</h4>
+                    <p>Aplicación <strong><code>verificador</code></strong> creada usando el comando <code>python manage.py startapp verificador</code> y enlazada correctamente con configuración de rutas y vistas.</p>
+                  </div>
+                </div>
+                <div class="checklist-item">
+                  <span class="checklist-icon">✅</span>
+                  <div class="checklist-content">
+                    <h4>Configuración de Templates y Paths en settings.py</h4>
+                    <p>Configurado <code>BASE_DIR</code> con <code>pathlib.Path</code> y el arreglo de <code>TEMPLATES</code> para mapear la carpeta <code>templates/</code> a nivel de proyecto.</p>
+                  </div>
+                </div>
+                <div class="checklist-item">
+                  <span class="checklist-icon">✅</span>
+                  <div class="checklist-content">
+                    <h4>Manejo de Espacios de Nombres (Namespaces)</h4>
+                    <p>Configuración de rutas aislada e independiente mediante la variable <code>app_name = "verificador"</code> en la aplicación.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Columna Derecha: Árbol de archivos interactivo -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">Estructura del Proyecto</h3>
+                  <p class="card-description">Explorador de archivos en tiempo real (excluyendo venv y cachés)</p>
+                </div>
+              </div>
+              <div class="tree-container" id="folder-tree-view">
+                <!-- Se poblará dinámicamente con JS usando el JSON devuelto por el servidor -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PESTAÑA 2: ENTORNO Y PIP -->
+        <div id="pip-env" class="content-pane">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">1. Entorno de Ejecución y Herramienta PIP</h3>
+                <p class="card-description">Aislamiento de componentes e instalación de dependencias en proyectos Django</p>
+              </div>
+            </div>
+            
+            <p>En el desarrollo profesional con Django, es fundamental evitar la instalación global de paquetes. Por ello, se utilizan entornos virtuales y el administrador de paquetes <code>pip</code>.</p>
+            
+            <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; font-weight: 600;">¿Qué es un Entorno Virtual?</h4>
+            <p style="color: var(--text-muted); margin-bottom: 1rem;">
+              Un entorno virtual (creado con el módulo <code>venv</code>) es una carpeta aislada que contiene una copia propia del intérprete de Python y su estructura de librerías. Al activarlo, cualquier paquete instalado mediante <code>pip</code> se guardará localmente dentro del entorno y no afectará a otros proyectos de la máquina.
+            </p>
+
+            <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; font-weight: 600;">Pasos de Configuración e Instalación del Proyecto:</h4>
+            
+            <div class="code-container">
+              <div class="code-header">Consola de Comandos (CMD / PowerShell / Terminal)</div>
+              <pre><code><span class="comment"># 1. Crear el entorno virtual llamado 'venv' en el directorio del proyecto</span>
+<span class="keyword">python</span> -m venv venv
+
+<span class="comment"># 2. Activar el entorno virtual (Comando en Windows)</span>
+venv\Scripts\activate
+
+<span class="comment"># 2. Activar el entorno virtual (Comando en Linux/macOS)</span>
+<span class="keyword">source</span> venv/bin/activate
+
+<span class="comment"># 3. Actualizar el gestor de paquetes pip</span>
+<span class="keyword">python</span> -m pip install --upgrade pip
+
+<span class="comment"># 4. Instalar Django mediante PIP (de forma aislada)</span>
+<span class="keyword">pip</span> install django
+
+<span class="comment"># 4. Alternativa: Instalar usando el archivo de requerimientos provisto</span>
+<span class="keyword">pip</span> install -r requirements.txt</code></pre>
+            </div>
+
+            <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; font-weight: 600;">Comprobación de la instalación:</h4>
+            <p style="color: var(--text-muted); margin-bottom: 1rem;">
+              Para asegurar que Django está instalado correctamente y que se puede invocar desde el entorno activo, existen dos comprobaciones fundamentales:
+            </p>
+            <ul>
+              <li style="margin-left: 1.5rem; margin-bottom: 0.5rem;">
+                <code>django-admin --version</code>: Comprueba que la herramienta administrativa global del framework está registrada en el PATH del entorno.
+              </li>
+              <li style="margin-left: 1.5rem; margin-bottom: 0.5rem;">
+                <code>python -m django --version</code>: Comprueba que el paquete de Python <code>django</code> puede ser importado correctamente por el intérprete actual.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- PESTAÑA 3: DJANGO-ADMIN Y MANAGE.PY -->
+        <div id="admin-tools" class="content-pane">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">2. Herramientas Administrativas de Django</h3>
+                <p class="card-description">Diferencia e interacción entre django-admin y manage.py</p>
+              </div>
+            </div>
+
+            <p>Django provee dos utilitarios esenciales para interactuar con el framework. Comprender sus roles es vital:</p>
+            
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Característica</th>
+                    <th><code>django-admin</code></th>
+                    <th><code>manage.py</code></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Ámbito</strong></td>
+                    <td>Global (del sistema/entorno)</td>
+                    <td>Local (específico de este proyecto)</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Momento de Uso</strong></td>
+                    <td>Antes de crear el proyecto (inicialización)</td>
+                    <td>Durante todo el desarrollo del proyecto</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Conexión con Settings</strong></td>
+                    <td>No conoce el archivo <code>settings.py</code> a menos que se defina la variable de entorno <code>DJANGO_SETTINGS_MODULE</code>.</td>
+                    <td>Apunta automáticamente al archivo <code>settings.py</code> de este proyecto.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Ejemplo de uso</strong></td>
+                    <td><code>django-admin startproject mi_proyecto</code></td>
+                    <td><code>python manage.py runserver</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; font-weight: 600;">Comandos Administrativos Clave de <code>manage.py</code>:</h4>
+            
+            <div class="checklist">
+              <div class="checklist-item">
+                <span class="checklist-icon" style="color: var(--accent-indigo)">❖</span>
+                <div class="checklist-content">
+                  <h4>runserver</h4>
+                  <p>Inicia el servidor web de desarrollo local. Por defecto corre en <code>http://127.0.0.1:8000/</code> pero permite especificar puerto e IP (ej: <code>python manage.py runserver 8080</code>).</p>
+                </div>
+              </div>
+              <div class="checklist-item">
+                <span class="checklist-icon" style="color: var(--accent-indigo)">❖</span>
+                <div class="checklist-content">
+                  <h4>startapp (referenciado como "startup" en temarios)</h4>
+                  <p>Crea la estructura de directorios y archivos necesaria para un nuevo módulo funcional o aplicación Django (ej: <code>python manage.py startapp verificador</code>).</p>
+                </div>
+              </div>
+              <div class="checklist-item">
+                <span class="checklist-icon" style="color: var(--accent-indigo)">❖</span>
+                <div class="checklist-content">
+                  <h4>createsuperuser</h4>
+                  <p>Crea una cuenta de usuario administrador con accesos totales para interactuar con la interfaz del panel de administración del framework (<code>/admin/</code>).</p>
+                </div>
+              </div>
+              <div class="checklist-item">
+                <span class="checklist-icon" style="color: var(--accent-indigo)">❖</span>
+                <div class="checklist-content">
+                  <h4>migrate y makemigrations</h4>
+                  <p><strong>makemigrations</strong> analiza los modelos creados y genera los archivos de migración de base de datos. <strong>migrate</strong> aplica esas instrucciones a la base de datos real (en nuestro caso, SQLite3).</p>
+                </div>
+              </div>
+              <div class="checklist-item">
+                <span class="checklist-icon" style="color: var(--accent-indigo)">❖</span>
+                <div class="checklist-content">
+                  <h4>Comandos de Ayuda Django</h4>
+                  <p>Usar <code>python manage.py help</code> lista todos los comandos instalados. Usar <code>python manage.py [comando] --help</code> muestra los argumentos detallados de un comando en específico.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PESTAÑA 4: ESTRUCTURA, CONFIGURACIONES Y MVC -->
+        <div id="config-architecture" class="content-pane">
+          <!-- Tarjeta de Estructura y Configuración -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">3. Estructura del Proyecto y Archivos de Configuración</h3>
+                <p class="card-description">Mapeo de archivos autogenerados y parámetros configurables de Django</p>
+              </div>
+            </div>
+
+            <p style="margin-bottom: 1rem;">Al generar un proyecto, Django crea un paquete de configuración principal con los siguientes archivos clave:</p>
+            
+            <ul>
+              <li style="margin-left: 1.5rem; margin-bottom: 0.5rem;">
+                <strong><code>__init__.py</code></strong>: Archivo vacío que le indica a Python que esta carpeta debe ser tratada como un paquete de módulos importable.
+              </li>
+              <li style="margin-left: 1.5rem; margin-bottom: 0.5rem;">
+                <strong><code>settings.py</code></strong>: Archivo central con todas las configuraciones del proyecto web.
+              </li>
+              <li style="margin-left: 1.5rem; margin-bottom: 0.5rem;">
+                <strong><code>urls.py</code></strong>: Archivo de enrutamiento principal. Mapea expresiones de ruta a vistas.
+              </li>
+              <li style="margin-left: 1.5rem; margin-bottom: 0.5rem;">
+                <strong><code>wsgi.py</code> / <code>asgi.py</code></strong>: Puntos de entrada para servidores de producción WSGI (síncronos) y ASGI (asíncronos).
+              </li>
+            </ul>
+
+            <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; font-weight: 600;">Configuraciones Críticas en <code>settings.py</code>:</h4>
+            
+            <p style="color: var(--text-muted); margin-bottom: 0.5rem;">
+              <strong>A) Configuración de Paths (Rutas de Archivos):</strong> Django utiliza la biblioteca <code>pathlib</code> para definir de forma dinámica el directorio raíz (<code>BASE_DIR</code>). Esto previene que se rompan las rutas si el proyecto se mueve de carpeta o servidor.
+            </p>
+            <div class="code-container" style="margin-bottom: 1.5rem;">
+              <div class="code-header">settings.py (Configuración de Paths)</div>
+              <pre><code><span class="keyword">from</span> pathlib <span class="keyword">import</span> Path
+<span class="comment"># BASE_DIR apunta a la carpeta contenedora del proyecto (donde está manage.py)</span>
+BASE_DIR = Path(__file__).resolve().parent.parent</code></pre>
+            </div>
+
+            <p style="color: var(--text-muted); margin-bottom: 0.5rem;">
+              <strong>B) Configuración de Plantillas (Templates):</strong> Para que Django sepa dónde buscar archivos HTML al renderizar vistas, se configura la lista <code>DIRS</code> dentro del bloque <code>TEMPLATES</code>:
+            </p>
+            <div class="code-container" style="margin-bottom: 1.5rem;">
+              <div class="code-header">settings.py (Configuración de Plantillas)</div>
+              <pre><code>TEMPLATES = [
+    {
+        <span class="string">'BACKEND'</span>: <span class="string">'django.template.backends.django.DjangoTemplates'</span>,
+        <span class="comment"># Mapeamos la carpeta 'templates' en la raíz de nuestro proyecto</span>
+        <span class="string">'DIRS'</span>: [BASE_DIR / <span class="string">'templates'</span>],
+        <span class="string">'APP_DIRS'</span>: <span class="keyword">True</span>, <span class="comment"># Permite buscar en la carpeta templates/ de cada app instalada</span>
+        <span class="comment"># ...</span>
+    },
+]</code></pre>
+            </div>
+
+            <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; font-weight: 600;">Manejo de Espacios de Nombres (Namespaces) en el Enrutador:</h4>
+            <p style="color: var(--text-muted); margin-bottom: 1rem;">
+              Para evitar colisiones entre nombres de rutas de distintas aplicaciones dentro de un mismo proyecto web, se utiliza el <strong>Namespacing</strong>. En este proyecto se implementa de la siguiente manera:
+            </p>
+            
+            <div class="code-container" style="margin-bottom: 1rem;">
+              <div class="code-header">verificador/urls.py</div>
+              <pre><code><span class="keyword">from</span> django.urls <span class="keyword">import</span> path
+<span class="keyword">from</span> . <span class="keyword">import</span> views
+
+<span class="comment"># Definimos el namespace de la app</span>
+app_name = <span class="string">"verificador"</span>
+
+urlpatterns = [
+    path(<span class="string">"hola/"</span>, views.hola, name=<span class="string">"hola"</span>),
+    path(<span class="string">""</span>, views.home, name=<span class="string">"home"</span>),
+]</code></pre>
+            </div>
+
+            <p style="color: var(--text-muted);">
+              En las plantillas o vistas, se hace referencia a la URL usando la nomenclatura <code>verificador:nombre_ruta</code>, por ejemplo:
+              <code>{% url 'verificador:home' %}</code> o <code>reverse('verificador:hola')</code>.
+            </p>
+          </div>
+
+          <!-- Tarjeta de Patrón MTV -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Arquitectura Django: El Patrón MTV (Model-Template-View)</h3>
+                <p class="card-description">Mapeo del ciclo de Request-Response respecto a MVC tradicional</p>
+              </div>
+            </div>
+
+            <p style="margin-bottom: 1.5rem;">Aunque Django se describe formalmente como un framework <strong>MVC (Modelo-Vista-Controlador)</strong>, en su terminología interna se aplica el patrón <strong>MTV (Modelo-Plantilla-Vista)</strong>:</p>
+
+            <div class="mtv-container">
+              <div class="mtv-box model">
+                <div class="mtv-icon">M</div>
+                <h4>Model (Modelo)</h4>
+                <p>La capa de acceso a datos. Abstrae la base de datos a través de clases en Python (ORM).</p>
+              </div>
+              <div class="mtv-box view">
+                <div class="mtv-icon">V</div>
+                <h4>View (Vista)</h4>
+                <p>La lógica de negocio. Recibe peticiones HTTP, consulta al Modelo y decide qué renderizar.</p>
+              </div>
+              <div class="mtv-box template">
+                <div class="mtv-icon">T</div>
+                <h4>Template (Plantilla)</h4>
+                <p>La capa de presentación. Archivos HTML con la sintaxis de plantillas de Django para inyectar datos.</p>
+              </div>
+            </div>
+
+            <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; font-weight: 600;">Correlación respecto a MVC Tradicional:</h4>
+            <ul>
+              <li style="margin-left: 1.5rem; margin-bottom: 0.5rem;">
+                El <strong>Model (Modelo)</strong> es idéntico en ambos patrones.
+              </li>
+              <li style="margin-left: 1.5rem; margin-bottom: 0.5rem;">
+                La <strong>View (Vista)</strong> de Django actúa en realidad como el <strong>Controlador (Controller)</strong> de MVC tradicional.
+              </li>
+              <li style="margin-left: 1.5rem; margin-bottom: 0.5rem;">
+                El <strong>Template (Plantilla)</strong> de Django equivale a la <strong>Vista (View)</strong> de MVC tradicional.
+              </li>
+              <li style="margin-left: 1.5rem; margin-bottom: 0.5rem;">
+                El propio <strong>Framework Django</strong> actúa como el router/despachador principal que conecta las URLs con la vista correcta.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      <p>Proyecto Educativo Django - Módulo 6, Unidad 2. Desarrollado con fines educativos de alto nivel.</p>
+      <p style="margin-top: 0.5rem; font-size: 0.8rem; color: rgba(255,255,255,0.3);">
+        Servidor impulsado por Django <code>manage.py runserver</code> | Base de Datos en <code>db.sqlite3</code>
+      </p>
+    </footer>
+
+    <!-- Script para control de pestañas y renderización de árbol de archivos -->
+    <script>
+      // Control de Navegación por Pestañas
+      function switchTab(event, tabId) {
+        // Ocultar todas las pestañas
+        const panes = document.querySelectorAll('.content-pane');
+        panes.forEach(pane => pane.classList.remove('active'));
+
+        // Desactivar todos los botones del menú
+        const buttons = document.querySelectorAll('.nav-button');
+        buttons.forEach(btn => btn.classList.remove('active'));
+
+        // Activar la pestaña seleccionada
+        document.getElementById(tabId).classList.add('active');
+        event.currentTarget.classList.add('active');
+      }
+
+      // Renderizador interactivo de estructura de directorios
+      function renderTree(node, container) {
+        if (!node) return;
+
+        const nodeElement = document.createElement('div');
+        nodeElement.className = 'tree-node';
+        if (node.name === 'init_verificador_django' && container.id === 'folder-tree-view') {
+          nodeElement.classList.add('root-node');
+        }
+
+        const content = document.createElement('div');
+        content.className = 'tree-node-content';
+
+        const icon = document.createElement('span');
+        icon.className = 'tree-node-icon';
+
+        if (node.is_dir) {
+          // Icono carpeta
+          icon.innerHTML = '<svg width="14" height="14" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"></path></svg>';
+          icon.classList.add('folder');
+        } else {
+          // Icono archivo
+          icon.innerHTML = '<svg width="14" height="14" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"></path></svg>';
+          icon.classList.add('file');
+        }
+
+        const name = document.createElement('span');
+        name.className = 'tree-node-name';
+        name.textContent = node.name;
+        if (node.is_dir) {
+          name.classList.add('folder-name');
+        }
+
+        content.appendChild(icon);
+        content.appendChild(name);
+        nodeElement.appendChild(content);
+
+        if (node.is_dir && node.children && node.children.length > 0) {
+          const childrenContainer = document.createElement('div');
+          childrenContainer.className = 'tree-node-children';
+          
+          node.children.forEach(child => {
+            renderTree(child, childrenContainer);
+          });
+          
+          nodeElement.appendChild(childrenContainer);
+
+          // Hacer las carpetas colapsables al hacer clic
+          content.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (childrenContainer.style.display === 'none') {
+              childrenContainer.style.display = 'block';
+              icon.style.opacity = '1';
+            } else {
+              childrenContainer.style.display = 'none';
+              icon.style.opacity = '0.5';
+            }
+          });
+        }
+
+        container.appendChild(nodeElement);
+      }
+
+      // Inicialización al cargar la página
+      document.addEventListener('DOMContentLoaded', () => {
+        // Cargar árbol de carpetas
+        try {
+          const treeData = JSON.parse('{{ folder_tree_json|safe }}');
+          const treeContainer = document.getElementById('folder-tree-view');
+          if (treeData) {
+            renderTree(treeData, treeContainer);
+          } else {
+            document.getElementById('folder-tree-view').innerHTML = '<p style="color: var(--text-muted)">Estructura no disponible</p>';
+          }
+        } catch (e) {
+          console.error("Error al renderizar el árbol de directorios:", e);
+          document.getElementById('folder-tree-view').innerHTML = '<p style="color: var(--text-muted)">Error al cargar estructura</p>';
+        }
+      });
+    </script>
   </body>
 </html>

@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: django-verificador:latest
+    container_name: django_verificador_app
+    ports:
+      - "8000:8000"
+    volumes:
+      # Sincronización del código en tiempo real para desarrollo rápido
+      - .:/app
+      # Evitar que el venv del host (si existe) sobreescriba el del contenedor
+      - /app/venv
+    environment:
+      # Variables para la creación automática del administrador por defecto
+      - DJANGO_SUPERUSER_USERNAME=admin
+      - DJANGO_SUPERUSER_PASSWORD=adminpassword123
+      - DJANGO_SUPERUSER_EMAIL=admin@verificador.cl
+    restart: unless-stopped

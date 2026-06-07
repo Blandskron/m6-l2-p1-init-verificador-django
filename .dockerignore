@@ -1,0 +1,14 @@
+.git
+.gitignore
+venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+db.sqlite3
+init_verificador_django/db.sqlite3
+.gemini
+.idea
+.vscode
+*.md
+docker-compose.yml
